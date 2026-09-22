@@ -1,138 +1,185 @@
 # 📊 Data Workflow Diagram - Pulse_E
-## Simple Figma-Ready Data Flow
+## Figma-Ready Simple Layout
 
-```mermaid
-graph TD
-    A["📱 Mobile App<br/>(User Interface)"]
-    
-    A -->|HTTP Request| B["🔌 FastAPI Routes<br/>(Request Handler)"]
-    
-    B -->|1. Fetch Data| C["💾 MySQL Database<br/>(AWS RDS)"]
-    B -->|2. Process Logic| D["⚙️ Service Layer<br/>(Business Logic)"]
-    
-    D -->|Query Results| E["🤖 Claude AI API<br/>(Insights Generation)"]
-    E -->|AI Response| D
-    
-    D -->|Validation| F["✅ Pydantic Models<br/>(Response Format)"]
-    
-    F -->|JSON Response| B
-    B -->|API Response| A
-    
-    C -->|Return Data| D
-    
-    style A fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px
-    style B fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
-    style C fill:#FFF3E0,stroke:#E65100,stroke-width:2px
-    style D fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
-    style E fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px
-    style F fill:#E0F2F1,stroke:#00695C,stroke-width:2px
+### 🎨 **BASIC FLOW DIAGRAM**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           📱 MOBILE APP                                      │
+│                     (User Interface / Client)                                │
+└────────────────────────────┬────────────────────────────────────────────────┘
+                             │ HTTP POST /endpoint
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      🔌 FASTAPI ROUTES                                       │
+│                   (Request Validation)                                       │
+└────────────────────────────┬────────────────────────────────────────────────┘
+                             │ Call Service Function
+                    ┌────────┴────────┐
+                    ▼                 ▼
+        ┌──────────────────┐  ┌──────────────────┐
+        │ 💾 MYSQL         │  │ ⚙️ SERVICE      │
+        │ DATABASE         │  │ LAYER           │
+        │ (AWS RDS)        │  │ (Business Logic)│
+        │                  │  │                 │
+        │ • skin_scans     │  │ • Fetch data    │
+        │ • cycles         │  │ • Calculate     │
+        │ • terra_activity │  │ • Call Claude   │
+        │ • health_logs    │  │                 │
+        │ • pregnancy_info │  │                 │
+        └──────────────────┘  └────────┬────────┘
+                    ▲                   │
+                    └───────────────────┘
+                            ▼
+        ┌──────────────────────────────┐
+        │  🤖 CLAUDE AI API            │
+        │  (Insights Generation)       │
+        │                              │
+        │  • Claude Vision (images)    │
+        │  • Claude Opus (insights)    │
+        └──────────────────────────────┘
+                     ▲
+                     │ AI Response
+                     │
+        ┌────────────┴──────────────┐
+        ▼                           ▼
+┌──────────────────────┐  ┌─────────────────────────────┐
+│  ✅ PYDANTIC        │  │   Validation & Parsing      │
+│  MODELS             │  │   (Structured Output)       │
+│                     │  │                             │
+│  Response Format:   │  │  • Extract scores 0-100     │
+│  • user_id         │  │  • Parse timestamps         │
+│  • today           │  │  • Extract insights         │
+│  • history         │  │  • Format statuses          │
+│  • correlations    │  │                             │
+│  • ai_insights     │  │                             │
+└──────────────────────┘  └─────────────────────────────┘
+        │
+        └─────────────┬────────────────────┐
+                      ▼                    ▼
+            ┌──────────────────┐  ┌─────────────────────┐
+            │  JSON Response   │  │  HTTP 200 + Data    │
+            │  Serialization   │  │                     │
+            └──────────────────┘  └─────────────────────┘
+                      │
+                      ▼
+        ┌─────────────────────────────┐
+        │  📱 MOBILE APP              │
+        │  (Display to User)          │
+        └─────────────────────────────┘
 ```
 
 ---
 
-## 📌 **6 Life Journey Endpoints - Data Flow**
+### 🎯 **6 LIFE JOURNEYS - ENDPOINT ARCHITECTURE**
 
-```mermaid
-graph LR
-    Mobile["📱 Mobile App"]
-    
-    subgraph Endpoints["🔌 API Endpoints (7-8 total)"]
-        E1["Beauty & Radiance"]
-        E2["Cycle & Fertility"]
-        E3["Athlete Performance"]
-        E4["Pregnancy & Postpartum"]
-        E5["Menopause & Vitality"]
-        E6["Lifelong Thriving"]
-    end
-    
-    subgraph Services["⚙️ Service Layer"]
-        S1["beauty_service"]
-        S2["cycle_service"]
-        S3["athlete_service"]
-        S4["pregnancy_service"]
-        S5["menopause_service"]
-        S6["thriving_service"]
-    end
-    
-    subgraph Database["💾 Database Tables"]
-        DB1["skin_scans"]
-        DB2["menstrual_cycles<br/>terra_activity_data"]
-        DB3["health_logs<br/>terra_activity_data"]
-        DB4["pregnancy_info"]
-        DB5["health_logs"]
-        DB6["health_logs<br/>6-year history"]
-    end
-    
-    subgraph AI["🤖 Claude AI"]
-        CLAUDE["Claude Vision +<br/>Claude Opus"]
-    end
-    
-    Mobile --> E1 & E2 & E3 & E4 & E5 & E6
-    
-    E1 --> S1
-    E2 --> S2
-    E3 --> S3
-    E4 --> S4
-    E5 --> S5
-    E6 --> S6
-    
-    S1 --> DB1 --> CLAUDE
-    S2 --> DB2 --> CLAUDE
-    S3 --> DB3 --> CLAUDE
-    S4 --> DB4 --> CLAUDE
-    S5 --> DB5 --> CLAUDE
-    S6 --> DB6 --> CLAUDE
-    
-    CLAUDE --> S1 & S2 & S3 & S4 & S5 & S6
-    
-    S1 --> Mobile
-    S2 --> Mobile
-    S3 --> Mobile
-    S4 --> Mobile
-    S5 --> Mobile
-    S6 --> Mobile
-    
-    style Mobile fill:#E8F5E9,stroke:#2E7D32,stroke-width:3px
-    style Endpoints fill:#E3F2FD,stroke:#1565C0,stroke-width:2px
-    style Services fill:#FCE4EC,stroke:#C2185B,stroke-width:2px
-    style Database fill:#FFF3E0,stroke:#E65100,stroke-width:2px
-    style AI fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px
+```
+                    📱 MOBILE APP
+                         │
+    ┌────────────────────┬────────────────────┐
+    │                    │                    │
+    ▼                    ▼                    ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  Beauty &   │    │   Cycle &   │    │   Athlete   │
+│  Radiance   │    │  Fertility   │    │ Performance │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                   │
+    POST /               POST /              POST /
+  beauty-             cycle-              athlete-
+  overview             overview           overview
+       │                  │                   │
+       ▼                  ▼                   ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  beauty_    │    │  cycle_     │    │  athlete_   │
+│  service    │    │  service    │    │  service    │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                   │
+       ├─ skin_scans      ├─ cycles          ├─ terra_
+       ├─ terra_data      ├─ bbt_logs        ├─ activity
+       ├─ sleep corr.     └─ opk_logs        │  _data
+       └─ cycle corr.                        └─ cycles
+
+
+    ┌────────────────────┬────────────────────┐
+    │                    │                    │
+    ▼                    ▼                    ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ Pregnancy & │    │ Menopause & │    │  Lifelong   │
+│ Postpartum  │    │  Vitality   │    │  Thriving   │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                   │
+    POST /              POST /              POST /
+  pregnancy-          menopause-          thriving-
+  overview             overview           overview
+       │                  │                   │
+       ▼                  ▼                   ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  pregnancy_ │    │ menopause_  │    │  thriving_  │
+│  service    │    │  service    │    │  service    │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                   │
+       ├─ pregnancy      ├─ symptoms         ├─ 6-year
+       ├─ health_logs    ├─ health_logs      │  history
+       └─ terra_data     └─ terra_data       ├─ health_logs
+                                             └─ vitality_data
+
+                            ▼
+                    🤖 CLAUDE AI API
+                (Generates All Insights)
 ```
 
 ---
 
-## 🔄 **Single Endpoint Request-Response Cycle**
+### 📊 **SINGLE REQUEST-RESPONSE CYCLE**
 
-```mermaid
-sequenceDiagram
-    actor User as 📱 User
-    participant API as 🔌 FastAPI Route
-    participant Service as ⚙️ Service Layer
-    participant DB as 💾 MySQL
-    participant AI as 🤖 Claude AI
-    
-    User->>API: HTTP POST /endpoint<br/>with user_id, params
-    
-    API->>Service: Call service function
-    
-    Service->>DB: Query data<br/>(30-day history, current state)
-    DB-->>Service: Return records (JSON, timestamps)
-    
-    Service->>AI: Send prompt<br/>(data + context)
-    AI-->>Service: Return insights<br/>(text response)
-    
-    Service->>Service: Parse response<br/>(extract scores 0-100)
-    
-    Service-->>API: Return PydanticModel<br/>(validated data)
-    
-    API->>API: Serialize to JSON
-    API-->>User: HTTP 200 + JSON<br/>(today, history,<br/>insights, scores)
-    
-    style User fill:#E8F5E9
-    style API fill:#E3F2FD
-    style Service fill:#FCE4EC
-    style DB fill:#FFF3E0
-    style AI fill:#F3E5F5
+```
+USER REQUEST                    SERVER PROCESSING                     USER RESPONSE
+═════════════════════════════════════════════════════════════════════════════════
+
+📱 User opens                   
+"Beauty & Radiance"             
+         │                       
+         ├─► POST /beauty-overview
+         │   {                  
+         │     user_id: 123,   ──────────────────┐
+         │     days: 30              │           │
+         │   }                       │           ▼
+         │                          ▼      ┌──────────────────┐
+         │                   ⚙️ beauty_   │ Query Database:  │
+         │                   service()   │ • skin_scans     │
+         │                          │     │ • terra_data     │
+         │                          │     │ • last 30 days   │
+         │                          ▼     └──────────────────┘
+         │                   🤖 Claude:
+         │                   "Analyze skin data + sleep
+         │                    + cycle correlation"
+         │                          │
+         │                          ▼
+         │                   ✅ Parse Results:
+         │                   • Score: 78/100
+         │                   • Status: "Good"
+         │                   • Insights: {...}
+         │                          │
+         │                          ▼
+         │                   Return Pydantic Model
+         │                   {
+         │                     user_id: 123,
+         │                     today: {...},
+         │                     history: [...],
+         │                     correlations: {...},
+         │                     ai_insights: {...}
+         │                   }
+         │
+         └──◄──────────────────────────────────────┐
+             JSON Response                         │
+             HTTP 200                              │
+                                                   ▼
+                                          📱 Display Results:
+                                          • Today's Score
+                                          • 30-Day History
+                                          • Sleep Impact
+                                          • Cycle Impact
+                                          • AI Tips
 ```
 
 ---
@@ -180,33 +227,72 @@ sequenceDiagram
 
 ---
 
-## 📝 **To Recreate in Figma:**
+## 🎨 **HOW TO RECREATE IN FIGMA (Simple Steps)**
 
-1. **Boxes (Rectangles):**
-   - Mobile App (green)
-   - FastAPI Routes (blue)
-   - Service Layer (pink)
-   - MySQL Database (orange)
-   - Claude AI (purple)
-   - Pydantic Models (teal)
+### **COLOR SCHEME:**
+```
+🟢 Green (#E8F5E9)    → Mobile App / User
+🔵 Blue (#E3F2FD)     → FastAPI / Routes
+🟣 Purple (#F3E5F5)   → Claude AI
+🟠 Orange (#FFF3E0)   → MySQL Database
+🔴 Pink (#FCE4EC)     → Service Layer
+🟦 Teal (#E0F2F1)     → Pydantic / Validation
+```
 
-2. **Arrows:**
-   - User Request → API (green)
-   - API → Service (blue)
-   - Service → Database (orange)
-   - Service → Claude (purple)
-   - Claude → Service (purple)
-   - Service → Pydantic (teal)
-   - Pydantic → API (blue)
-   - API → User Response (green)
+### **LAYOUT IN FIGMA:**
 
-3. **Colors:**
-   - Green: User interactions
-   - Blue: API/Routing
-   - Pink: Business logic
-   - Orange: Database
-   - Purple: AI
-   - Teal: Validation
+**Diagram 1: Basic Flow** (Top to Bottom)
+1. Create rectangle: "Mobile App" → Green, centered
+2. Arrow down (solid line, arrow style)
+3. Create rectangle: "FastAPI Routes" → Blue
+4. Arrow down (splits into 2)
+5. Left: Rectangle "MySQL Database" → Orange
+6. Right: Rectangle "Service Layer" → Pink
+7. From Service → Arrow to "Claude AI" → Purple
+8. Back to Service → Arrow to "Pydantic Models" → Teal
+9. Up to API → Arrow to Mobile
+
+**Diagram 2: 6 Life Journeys** (Left to Right)
+1. Top: "Mobile App" → Green
+2. Below (3 rows, 2 columns):
+   - Row 1: Beauty, Cycle, Athlete
+   - Row 2: Pregnancy, Menopause, Lifelong
+3. Each connects to service (pink box below)
+4. Each service connects to DB tables (orange)
+5. All converge to "Claude AI" (purple) at bottom
+
+**Diagram 3: Request Cycle** (Left to Right Timeline)
+1. Left column: "USER REQUEST"
+   - POST endpoint
+   - with params
+2. Middle column: "SERVER PROCESSING"
+   - Service called
+   - Database queried
+   - Claude generates
+   - Response parsed
+3. Right column: "USER RESPONSE"
+   - JSON returned
+   - Displayed on app
+
+### **SHAPES & TEXT:**
+- All boxes: Rounded corners (8px radius)
+- Arrow width: 2px
+- Text: 12px font, center aligned
+- Box size: 120px × 60px (can adjust)
+- Arrow labels: Add small text next to arrows
+
+---
+
+## 📌 **WHAT TO SHOW TEAM LEAD:**
+
+✅ This document shows your GitHub repo  
+✅ Shows simplified flow (not code)  
+✅ Shows all 6 Life Journeys architecture  
+✅ Shows request-response cycle  
+✅ Ready to copy into Figma  
+
+**Say to Team Lead:**
+> "Here's the data workflow diagram showing how requests flow through our system. I can recreate this in Figma with exact colors/sizes. Should I create it now?"
 
 ---
 
