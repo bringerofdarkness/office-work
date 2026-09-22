@@ -1,6 +1,16 @@
 # 📊 Data Workflow Diagram - Pulse_E
 ## Figma-Ready Simple Layout
 
+### ⚠️ **CORRECTIONS MADE (Sep 22, 2026)**
+
+**Fixed Database Tables:**
+- ✅ **Removed** `opk_logs` - doesn't exist in database
+- ✅ **Changed** "pregnancy" → "pregnancy_status (NEW)" - correct name & needs to be created
+- ✅ **Removed** "vitality_data" - use health_logs instead
+- ✅ **Simplified** Beauty & Radiance to show cycles correlation correctly
+
+**Verified Against:** DATABASE_SCHEMA_REFERENCE.md (All 7 modules)
+
 ### 🎨 **BASIC FLOW DIAGRAM**
 
 ```
@@ -96,8 +106,9 @@
        │                  │                   │
        ├─ skin_scans      ├─ cycles          ├─ terra_
        ├─ terra_data      ├─ bbt_logs        ├─ activity
-       ├─ sleep corr.     └─ opk_logs        │  _data
-       └─ cycle corr.                        └─ cycles
+       └─ cycles          └─ cycles          │  _data
+         (for           (for                 └─ cycles
+         correlations)   analysis)
 
 
     ┌────────────────────┬────────────────────┐
@@ -118,10 +129,10 @@
 │  service    │    │  service    │    │  service    │
 └──────┬──────┘    └──────┬──────┘    └──────┬──────┘
        │                  │                   │
-       ├─ pregnancy      ├─ symptoms         ├─ 6-year
-       ├─ health_logs    ├─ health_logs      │  history
-       └─ terra_data     └─ terra_data       ├─ health_logs
-                                             └─ vitality_data
+       ├─ pregnancy      ├─ health_logs      ├─ health_logs
+       │  _status (NEW)   ├─ cycles         │  (long-term)
+       ├─ health_logs    └─ terra_data      └─ cycles
+       └─ terra_data
 
                             ▼
                     🤖 CLAUDE AI API
